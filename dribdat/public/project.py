@@ -84,15 +84,15 @@ def project_details(project_id):
     return project_edit_action(project_id, True)
 
 
-@blueprint.route("/<int:project_id>/boost", methods=["GET", "POST"])
+@blueprint.route("/<int:project_id>/evaluate", methods=["GET", "POST"])
 @login_required
 @admin_required
-def project_boost(project_id):
-    """Add a booster to a project."""
+def project_evaluate(project_id):
+    """Add an evaluation to a project."""
     project = Project.query.filter_by(id=project_id).first_or_404()
     event = project.event
 
-    form = ProjectBoost(obj=project, next=request.args.get("next"))
+    form = ProjectEvaluation(obj=project, next=request.args.get("next"))
 
     # TODO: load from a YAML file or from the Presets config
     form.boost_type.choices = [
@@ -107,24 +107,46 @@ def project_boost(project_id):
         "Glorious purpose",
     ]
 
+    if request.method == 'GET':
+        if not project.evaluation:
+            with open('dribdat/templates/includes/evaluation.md') as f:
+                project.evaluation = f.read()
+
     # Process form
     if form.is_submitted() and form.validate():
         # Update project data
         cache.clear()
+        project.evaluation = form.evaluation.data
         project_action(
-            project_id, "boost", action=form.boost_type.data, text=form.note.data
+            project_id, "boost", action=form.boost_type.data, text=form.evaluation.data
         )
         project.update_now()
         project.save()
-        flash("Thanks for your boost!", "success")
-        return project_view(project.id)
+        flash("Thanks for your evaluation!", "success")
+        return redirect(url_for("project.project_evaluation", project_id=project.id))
 
     return render_template(
-        "public/projectboost.html",
+        "public/projectevaluate.html",
         current_event=event,
         project=project,
         form=form,
         active="dribs",
+    )
+
+
+@blueprint.route("/<int:project_id>/evaluation", methods=["GET"])
+def project_evaluation(project_id):
+    """Show a project evaluation."""
+    project = Project.query.filter_by(id=project_id).first_or_404()
+    if not project.evaluation:
+        return redirect(url_for("project.project_view", project_id=project.id))
+    project_badge = project.all_dribs(5, 'boost')
+    return render_template(
+        "public/projectevaluation.html",
+        project=project,
+        project_badge=project_badge,
+        current_event=project.event,
+        active="evaluation",
     )
 
 

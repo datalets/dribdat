@@ -41,6 +41,11 @@
 {{ detail.render_project_head(project) }}
 
 <div class="project-content-nav text-end mt-2 mb-2">
+{% if project.evaluation %}
+  <a id="eval-tab-md" href="{{ url_for('project.project_evaluation', project_id=project.id) }}"
+    title="Show official evaluation">
+    <i class="fa fa-star m-2" aria-hidden="true"></i>Evaluation</a>
+{% endif %}
 {% if project_team %}
   <a id="team-tab-md" href="#team-md"
     title="Show team members">

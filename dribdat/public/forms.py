@@ -184,15 +184,13 @@ class ProjectComment(FlaskForm):
     submit = SubmitField("Send comment")
 
 
-class ProjectBoost(FlaskForm):
-    """Add a boost to a project."""
+class ProjectEvaluation(FlaskForm):
+    """Project evaluation form."""
 
     id = HiddenField("id")
-    note = TextAreaField(
-        "Short praise and comments", [length(max=280), InputRequired()]
-    )
+    evaluation = TextAreaField(u"Evaluation", [length(max=4096)])
     boost_type = SelectField("Select a booster pack", [InputRequired()])
-    submit = SubmitField("Energize!")
+    submit = SubmitField(u"Save evaluation")
 
 
 class EventNew(FlaskForm):

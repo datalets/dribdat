@@ -128,7 +128,9 @@
 
         {% if not s.title %}
           <div class="date">
-          {% if s.ref_url %}
+          {% if s.ref_url == 'evaluation' %}
+            <a href="{{ url_for('project.project_evaluation', project_id=project.id) }}">
+          {% elif s.ref_url %}
             <a href="{{ s.ref_url }}">
           {% endif %}
               <span title="{{ s.date }}">

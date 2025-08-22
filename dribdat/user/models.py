@@ -770,6 +770,7 @@ class Project(PkModel):
     # Main content bits
     autotext = Column(db.UnicodeText(), nullable=True, default="")
     longtext = Column(db.UnicodeText(), nullable=True, default="")
+    evaluation = Column(db.UnicodeText(), nullable=True, default="")
 
     # Devilsinthedetails
     logo_color = Column(db.String(7), nullable=True)
@@ -902,6 +903,7 @@ class Project(PkModel):
             "is_webembed": self.is_webembed,
             "progress": self.progress,
             "summary": self.summary or "",
+            "evaluation": self.evaluation or "",
             "hashtag": self.hashtag or "",
             "image_url": self.image_url or "",
             "source_url": self.source_url or "",
@@ -1071,6 +1073,8 @@ class Project(PkModel):
                 "progress": a.project_progress,
                 "id": a.id,
             }
+            if a.name == 'boost' and self.evaluation:
+                cur["ref_url"] = 'evaluation'
             dribs.append(cur)
             # Show changes in progress
             if not by_name and not only_posts:
@@ -1258,6 +1262,8 @@ class Project(PkModel):
             self.longtext = ""
         if self.autotext is None:
             self.autotext = ""
+        if self.evaluation is None:
+            self.evaluation = ""
 
     def set_auto_image(self):
         """Get an image if available."""

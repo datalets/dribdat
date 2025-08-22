@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% import "macros/_detail.html" as detail %}
+
+{% block page_title %}Evaluation: {{project.name}}{% endblock %}
+{% block body_class %}projectevaluation-view{% endblock %}
+
+{% block content %}
+
+{{ detail.render_project_buttons(project, project_starred, past_version, allow_edit, lock_editing, allow_revert, allow_post, current_user, False) }}
+{{ detail.render_project_image(project) }}
+{{ detail.render_project_head(project) }}
+
+<div class="project-content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="project-longtext">
+        {{ project.evaluation|markdown|safe }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="project-badges">
+  {% for s in project_badge %}
+    <a class="boost float-left me-2" href="{{ url_for('project.get_log', project_id=project.id) }}#log-{{ s.id }}" title="{{ s.title }}">
+      <i class="fa fa-{{ s.icon }}" aria-hidden="true"></i>
+    </a>
+  {% endfor %}
+</span>
+
+{% include "includes/projectnav.html" %}
+
+{% endblock %}

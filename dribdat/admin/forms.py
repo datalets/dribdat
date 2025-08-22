@@ -176,6 +176,7 @@ class ProjectForm(FlaskForm):
     download_url = URLField(u'Demo link', [length(max=2048)],
         description="A link shown prominently at the top and bottom")
     longtext = TextAreaField(u'Pitch')
+    evaluation = TextAreaField(u'Evaluation')
     is_webembed = BooleanField(u'Slide mode', default=False,
         description="With this option, the Pitch is rendered as Markdown slides")
     autotext_url = URLField(u'Readme link', [length(max=2048)],

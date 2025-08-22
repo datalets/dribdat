@@ -2,16 +2,16 @@
 
 {% extends "layout.html" %}
 
-{% block page_title %}Boost: {{project.name}}{% endblock %}
-{% block body_class %}projectboost{% endblock %}
+{% block page_title %}Evaluate: {{project.name}}{% endblock %}
+{% block body_class %}projectevaluation{% endblock %}
 
 {% block content %}
-  <h2>Boost
+  <h2>Evaluate
     <a class="project-link" href="{{ url_for('project.project_view', project_id=project.id) }}" target="_blank">{{project.name}}</a>
   </h2>
 
   <div class="form-project-post">
-    {{ render_form(url_for('project.project_boost', project_id=project.id), form, formid='projectBoost') }}
+    {{ render_form(url_for('project.project_evaluate', project_id=project.id), form, formid='projectEvaluation') }}
   </div>
 
   <center class="mt-3">
