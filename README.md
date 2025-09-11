@@ -1,54 +1,75 @@
+<div align="center">
+  <img src="dribdat/static/img/logo/logo13.png" alt="Dribdat Logo" width="150">
+  <h1>Dribdat</h1>
+  <p><b>A playful platform for data-driven hackathons and creative sprints.</b></p>
+</div>
+
 ![Github Actions build status](https://github.com/dribdat/dribdat/workflows/build/badge.svg)
 [![codecov status](https://codecov.io/gh/dribdat/dribdat/branch/main/graph/badge.svg?token=Ccd1vTxRXg)](https://codecov.io/gh/dribdat/dribdat)
 [![FOSSA status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Floleg%2Fdribdat.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Floleg%2Fdribdat?ref=badge_shield)
+[![OpenCollective](https://opencollective.com/dribdat/backers/badge.svg)](#backers)
+[![OpenCollective](https://opencollective.com/dribdat/sponsors/badge.svg)](#sponsors)
 
-# Dribdat
+Dribdat is an open-source hackathon management application designed to bring your collaborative events to life. It provides a suite of tools to help you organize, run, and showcase hackathons, workshops, and creative sprints. Built on open data standards, Dribdat is your all-in-one solution for fostering innovation and collaboration.
 
-**An open source hackathon management application that playfully assists your team in crowdsourcing technical designs.** 
+## ✨ Key Features
 
-Designed to bootstrap your [awesome hackathon](https://github.com/dribdat/awesome-hackathon), Dribdat's toolset can be used as a versatile toolbox for civic tech sprints. To get started, [install](#Quickstart) the software. 
+*   **📅 Full Event Lifecycle:** From announcing your event and publishing challenges to forming teams and showcasing results, Dribdat has you covered.
+*   **🧩 Project Curation:** A playful and engaging interface for participants to explore ideas and for organizers to manage projects.
+*   **🔄 Data Aggregation:** Automatically sync project updates from GitHub, GitLab, Gitea, Etherpad, and more.
+*   **🛠️ Rich Tool Integrations:** Connect with popular platforms like Slack, Mattermost, Discord, and others.
+*   **🎨 Customizable & Themeable:** Tailor the platform to your event's brand with a customizable frontend and admin-configurable settings.
+*   **📊 Progress Tracking:** Keep a pulse on all projects with real-time progress logs and updates.
+*   **🚀 Alternative Frontends:** Use the standard Bootstrap UI, or try [Backboard](https://github.com/dribdat/backboard) (Vue.js) for a more modern feel.
 
-🚲 See [Tour de Hack](https://dribdat.cc/tour) for examples, and [User handbook](https://dribdat.cc/usage) for screenshots. 🏔️ There are mirrors on [Codeberg](https://codeberg.org/dribdat/dribdat) and [GitHub](https://github.com/dribdat/dribdat). 🩵 Support us on [OpenCollective](https://opencollective.com/dribdat/updates)
+## 🚀 Getting Started
 
-<a href="https://opencollective.com/dribdat/donate" target="_blank"><img src="https://opencollective.com/dribdat/donate/button@2x.png?color=blue" width=300 /></a>
+Get a local instance of Dribdat up and running in just a few minutes with Docker.
 
-We aim to include people of all backgrounds in using + developing this tool - no matter your age, gender, race, ability, or sexual identity 🏳️‍🌈 Please read our [Code of Conduct](CODE_OF_CONDUCT.md) if you have questions.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/dribdat/dribdat.git
+    cd dribdat
+    ```
 
-# Purpose
+2.  **Run with Docker Compose:**
+    ```bash
+    docker-compose -f docker-compose.sqlite.yml up
+    ```
+    This will start Dribdat using a simple, self-contained SQLite database.
 
-Created in light of the [Hacker ethic](https://en.wikipedia.org/wiki/Hacker_ethic), the Zen of Dribdat is (in a nutshell):
+3.  **Launch!**
+    Open your browser and navigate to [http://localhost:5000](http://localhost:5000). The first user to register becomes an admin!
 
-- **Commit sustainably**: aggregate results in open, web-friendly data formats for search and archiving.
-- **Go live and let live**: efficiently deploy designs, dev envs, docs accessible to your entire team.
-- **Co-create in safe spaces**: with content and tools promoting safer conduct and increased privacy.
+For more advanced installation options, including production setups, check out our [Deployment Guide](https://docs.dribdat.cc/deploy).
 
-Visit the [Hackfinder](https://hackintegration.ch/hackfinder) to find events connected to current research, and join our [Hack:Org:X](https://hackorgx.dribdat.cc) meetings to say 'hi' to the maintainers and fellow hackathon organizers.
+## 🌍 Live Demo & Showcase
 
-For more background and references, see the 📖 [User Handbook](https://docs.dribdat.cc/usage). If you need help or advice in setting up your site, or would like to contribute to the project: please get in touch via 🗣️ [Discussions](https://github.com/orgs/dribdat/discussions).
+*   **Live Demo:** See a demo of Dribdat in action at [demo.dribdat.cc](https://demo.dribdat.cc/event/1).
+*   **Tour de Hack:** Explore a showcase of past events powered by Dribdat at the [Tour de Hack](https://dribdat.cc/tour).
 
-# Quickstart
+## 🤖 The Dribdat Ecosystem
 
-The Dribdat project can be deployed to any server capable of serving [Python](https://python.org) applications, and is set up for fast deployment using [Ansible or Docker](https://dribdat.cc/deploy) 🏀 The first user that registers becomes an admin, so don't delay when you make your play!
+Dribdat is more than just a web application. It's an ecosystem of tools designed to work together:
 
-If you would like to run this application on any other cloud or local machine, there are instructions in the [Deployment guide](https://docs.dribdat.cc/deploy). Information on contributing and extending the code can be found in the [Contributors guide](https://docs.dribdat.cc/contribute), which includes API documentation, and other details.
+*   **[dribdat/dribdat](https://github.com/dribdat/dribdat):** The core Flask-based web application.
+*   **[dribdat/backboard](https://github.com/dribdat/backboard):** A responsive, modern alternative frontend built with Vue.js.
+*   **[dribdat/dridbot](https://github.com/dribdat/dridbot):** A chatbot client that integrates with the Dribdat API.
 
-See also **[backboard](https://github.com/dribdat/backboard)**: a responsive, modern alternative frontend, and our **[dridbot](https://github.com/dribdat/dridbot)** chat client. Both demonstrate reuse of the dribdat API. If you need support with your deployment, please reach out through [Discussions](https://github.com/orgs/dribdat/discussions). Pull Requests and Issues welcome!
+## ❤️ Contributing
 
-Development Status: 🍌 [Perpetual beta](https://en.wikipedia.org/wiki/Perpetual_beta)
-ASCII Signature: `d}}BD{t` 
+We welcome contributions of all kinds! Whether you're a developer, a designer, or a hackathon organizer, we'd love your help to make Dribdat even better.
 
-# Credits
+*   **Code of Conduct:** We are committed to providing a welcoming and inclusive environment. Please read our [Code of Conduct](CODE_OF_CONDUCT.md).
+*   **Contributor's Guide:** For information on how to contribute, please see our [Contributor's Guide](https://docs.dribdat.cc/contribute).
+*   **Discussions:** Have a question or an idea? Join our [GitHub Discussions](https://github.com/orgs/dribdat/discussions).
 
-This application was based on [cookiecutter-flask](https://github.com/sloria/cookiecutter-flask) by [Steven Loria](https://github.com/sloria), a more modern version of which is [cookiecutter-flask-restful](https://github.com/karec/cookiecutter-flask-restful). [Cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html#available-templates) could also be a good bootstrap for your own hackathon projects!
+## 🙏 Acknowledgements
 
-♡ The [Open Data](https://opendata.ch), [Open Networking](https://opennetworkinfrastructure.org/) and [Open Source](https://dinacon.ch) communities in 🇨🇭 Switzerland gave this project initial form and direction through a hundred events. ♥-felt thanks to our [Contributors](https://github.com/dribdat/dribdat/graphs/contributors), and additionally: F. Wieser and M.-C. Gasser at [Swisscom](http://swisscom.com) for support at an early stage of this project, to [Alexandre Cotting](https://github.com/Cotting), [Anthony Ritz](https://github.com/RitzAnthony), [Chris Mutel](https://github.com/cmutel), [Fabien Schwob](https://github.com/jibaku), [Gonzalo Casas](https://github.com/gonzalocasas), [Iliya Tikhonenko](https://github.com/vleugelcomplement), [Janik von Rotz](https://janikvonrotz.ch/), [Jonathan Schnyder](https://github.com/jonHESSO), [Jonathan Sobel](https://github.com/JonathanSOBEL), [Philip Shemella](https://github.com/philshem), [Thomas Amberg](https://github.com/tamberg), [Yusuf Khasbulatov](https://github.com/khashashin) .. and all participants and organizers sending in bugs and requests! You are all awesome `h`a`c`k`e`r`s` ♡
+Dribdat was originally based on [cookiecutter-flask](https://github.com/sloria/cookiecutter-flask). We are grateful to the many [contributors and supporters](CREDITS.md) who have helped shape this project.
 
-![](dribdat/static/img/logo/logo13.png)
+The original `README.md` can be found [here](README_old.md).
 
-## License
+## 📄 License
 
 This project is open source under the [MIT License](LICENSE).
-
-The [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md) applies to interactions with the maintainers and support community of the project.
-
-Due to the use of the [boto3](https://github.com/boto/boto3/) library for optional S3 upload support, there is a dependency on OpenSSL via awscrt. If you use these features, please note that the product includes cryptographic software written by Eric Young (eay@cryptsoft.com) and Tim Hudson (tjh@cryptsoft.com).
