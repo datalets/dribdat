@@ -13,6 +13,7 @@ from dribdat.apifetch import (
     FetchDataProject,
     FetchWebProject,
     FetchGitProject,
+    FetchSlackChannel,
     FetchHuggingFaceProject,
 )
 
@@ -29,6 +30,9 @@ def GetProjectData(url, with_history=False):
 
     elif url.find("//codeberg.org/") > 0:
         return get_codeberg_project(url, with_history)
+
+    elif url.find(".slack.com/") > 0:
+        return FetchSlackChannel(url)
 
     elif url.endswith(".git"):
         return FetchGitProject(url, with_history)

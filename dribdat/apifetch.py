@@ -6,10 +6,18 @@ from pyquery import PyQuery as pq  # noqa: N813
 from base64 import b64decode
 from bleach.sanitizer import ALLOWED_ATTRIBUTES
 from urllib.parse import quote_plus
+from datetime import datetime
 import huggingface_hub
 import shutil
 import requests
 import bleach
+import re
+try:
+    from slack_sdk import WebClient
+    from slack_sdk.errors import SlackApiError
+except ImportError:
+    WebClient = None
+    SlackApiError = None
 from .apievents import (
     fetch_commits,
     fetch_commits_gitlab,
@@ -683,3 +691,50 @@ def FetchWebPretalx(text, url):
         "source_url": url,
         "logo_icon": "window-maximize",
     }
+
+
+def FetchSlackChannel(project_url):
+    """Get a channel history from Slack."""
+    if not WebClient or not SlackApiError:
+        return {}
+    # See https://slack.com/webapi
+    # A token is required to access the Slack API
+    if 'SLACK_API_TOKEN' not in current_app.config:
+        return {}
+    token = current_app.config['SLACK_API_TOKEN']
+    client = WebClient(token=token)
+    # Correct the URL to the format required by the SDK
+    match = re.search(r'archives/([A-Z0-9]+)', project_url)
+    if not match:
+        return {}
+    channel_id = match.group(1)
+    # Fetch channel history
+    try:
+        messages = []
+        for result in client.conversations_history(channel=channel_id):
+            for msg in result["messages"]:
+                permalink = client.chat_getPermalink(channel=channel_id, message_ts=msg['ts'])
+                messages.append({
+                    "message": msg["text"],
+                    "author": msg["user"],
+                    "date": datetime.fromtimestamp(float(msg["ts"])),
+                    "url": permalink['permalink'],
+                })
+    except SlackApiError as e:
+        current_app.logger.warning("Slack API Error: %s" % e.response['error'])
+        return {}
+    # Fetch channel information
+    try:
+        result = client.conversations_info(channel=channel_id)
+        channel = result['channel']
+        return {
+            "type": "Slack",
+            "name": channel['name'],
+            "summary": channel['purpose']['value'],
+            "commits": messages,
+            "source_url": project_url,
+            "logo_icon": "slack",
+        }
+    except SlackApiError as e:
+        current_app.logger.warning("Slack API Error: %s" % e.response['error'])
+    return {}
