@@ -87,7 +87,11 @@ def SyncProjectData(project, data):
     project.save()
     # Additional logs, if available
     if "commits" in data:
-        SyncCommitData(project, data["commits"])
+        if "type" in data and data["type"].lower() == "slack":
+            source_type = 'slack'
+        else:
+            source_type = 'git'
+        SyncCommitData(project, data["commits"], source_type)
 
 
 def AddProjectDataFromAutotext(project):
@@ -222,26 +226,7 @@ def ProjectActivity(project, of_type, user, action=None, comments=None):
     return True
 
 
-def CheckPrevCommits(commit, username, since, until, prevlinks, prevdates):
-    # Check duplicates
-    if "url" in commit and commit["url"] is not None:
-        if commit["url"] in prevlinks:
-            return None
-    if commit["date"].replace(microsecond=0) in prevdates:
-        return None
-    if commit["date"] < since or commit["date"] > until:
-        return None
-    # Get message and author
-    message = commit["message"]
-    if username != commit["author"]:
-        username = commit["author"]
-        user = User.query.filter_by(username=username).first()
-        if user is None:
-            message += " (@%s)" % username or "git"
-    return message
-
-
-def SyncCommitData(project, commits):
+def SyncCommitData(project, commits, source_type='git'):
     """Collect data for syncing a project from a remote site."""
     if project.event is None or len(commits) == 0:
         return
@@ -251,13 +236,28 @@ def SyncCommitData(project, commits):
     prevdates = [a.timestamp.replace(microsecond=0) for a in prevactivities]
     prevlinks = [a.ref_url for a in prevactivities]
     username = None
-    user = None
     since = project.event.starts_at_tz
     until = project.event.ends_at_tz
     for commit in commits:
-        message = CheckPrevCommits(commit, username, since, until, prevlinks, prevdates)
-        if message is None:
+        # Check for duplicates
+        if "url" in commit and commit["url"] is not None:
+            if commit["url"] in prevlinks:
+                continue
+        if commit["date"].replace(microsecond=0) in prevdates:
             continue
+        if commit["date"] < since or commit["date"] > until:
+            continue
+        # Get message and author
+        message = commit["message"]
+        current_author_name = commit["author"]
+        user = None
+        if source_type == 'slack':
+            user = User.query.filter_by(sso_id=current_author_name).first()
+        else:
+            user = User.query.filter_by(username=current_author_name).first()
+        if user is None and username != current_author_name:
+            message += " (@%s)" % current_author_name
+        username = current_author_name
         # Create object
         activity = Activity(
             name="update",
@@ -268,6 +268,6 @@ def SyncCommitData(project, commits):
         )
         if "url" in commit and commit["url"] is not None:
             activity.ref_url = commit["url"]
-        if user is not None:
+        if user:
             activity.user_id = user.id
         activity.save()
