@@ -12,7 +12,7 @@ from flask import (
     current_app,
 )
 from flask_login import login_required, current_user
-from dribdat.user.models import User, Event, Project, Role
+from dribdat.user.models import User, Event, Project, Role, UserMatch
 from dribdat.user import (
     getProjectStages, 
     isUserActive, USER_UNDER_REVIEW_MESSAGE,
@@ -21,11 +21,13 @@ from dribdat.public.userhelper import (
     get_users_by_search,
     get_dribs_paginated,
 )
+from dribdat.user.forms import MatchForm
 from dribdat.public.forms import EventNew, EventEdit
 from dribdat.public.projhelper import current_event
 from dribdat.database import db
 from dribdat.extensions import cache
 from dribdat.aggregation import GetEventUsers
+from dribdat.mailer import send_project_invitation_email
 from urllib.parse import urlparse
 from sqlalchemy import and_, func
 from datetime import datetime, timedelta
@@ -251,6 +253,68 @@ def user_profile(username):
 def user_current():
     """Redirect to the current user's profile."""
     return redirect(url_for("public.user_profile", username=current_user.username))
+
+
+@blueprint.route("/user/match", methods=["GET", "POST"])
+@login_required
+def user_match():
+    """Show a user's matching profile."""
+    user = current_user
+    form = MatchForm(obj=user, next=request.args.get("next"))
+    if form.validate_on_submit():
+        form.populate_obj(user)
+        user.save()
+        flash("Thanks for updating your matching profile.", "success")
+        return redirect(url_for("public.user_match"))
+    score_tip = int(user.get_profile_percent() * 100)
+    team_recommend = [m.match for m in UserMatch.query.filter_by(user_id=user.id).all()]
+    return render_template(
+        "public/usermatch.html",
+        active="match",
+        user=user,
+        form=form,
+        score_tip=score_tip,
+        team_recommend=team_recommend,
+    )
+
+
+@blueprint.route("/user/create_project_with_team", methods=["POST"])
+@login_required
+def create_project_with_team():
+    """Create a new project with a team of recommended users."""
+    team_member_ids = [int(i) for i in request.form.get("team_members", "").split(",") if i]
+    if not team_member_ids:
+        flash("No team members were selected.", "warning")
+        return redirect(url_for("public.user_match"))
+
+    # Create a new project
+    event = current_event()
+    if not event:
+        flash("There is no active event to create a project for.", "warning")
+        return redirect(url_for("public.user_match"))
+
+    project = Project(
+        name=f"{current_user.username}'s New Project",
+        summary="A new project created from a team match.",
+        event_id=event.id,
+        user_id=current_user.id,
+    )
+    db.session.add(project)
+    db.session.commit()
+
+    # Add team members
+    team_members = User.query.filter(User.id.in_(team_member_ids)).all()
+    project.team.append(current_user)
+    for member in team_members:
+        project.team.append(member)
+    project.save()
+
+    # Send invitation emails
+    for member in team_members:
+        send_project_invitation_email(member, project)
+
+    flash("A new project has been created and invitations have been sent to your new teammates.", "success")
+    return redirect(url_for("project.project_view", project_id=project.id))
 
 
 @blueprint.route("/user/_post", methods=["GET"])

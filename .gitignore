@@ -71,3 +71,4 @@ data/
 # JavaScript
 node_modules
 yarn-error.log
+flask_output.log

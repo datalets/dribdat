@@ -9,6 +9,7 @@ from wtforms import (
     TextAreaField,
     SelectMultipleField,
     HiddenField,
+    BooleanField,
 )
 from wtforms.fields import (
     URLField,
@@ -202,4 +203,14 @@ class StoryForm(FlaskForm):
     my_wishes = common_user_related_fields["wishes"]
     my_goals = common_user_related_fields["goals"]
 
+    submit = SubmitField("Save changes")
+
+
+class MatchForm(FlaskForm):
+    """User matching form."""
+
+    id = HiddenField("id")
+    is_matchable = BooleanField(
+        "Make my profile available for matching",
+    )
     submit = SubmitField("Save changes")

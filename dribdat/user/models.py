@@ -117,6 +117,7 @@ class User(UserMixin, PkModel):
     # State flags
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
+    is_matchable = Column(db.Boolean(), default=False)
 
     # External profile
     cardtype = Column(db.String(80), nullable=True)  # type of avatar
@@ -1489,3 +1490,21 @@ class Activity(PkModel):
 
 # class Availability(PkModel):
 #    """Agree when do we drib."""
+
+class UserMatch(PkModel):
+    """User matching recommendations."""
+
+    __tablename__ = "user_matches"
+    user_id = reference_col("users", nullable=False)
+    user = relationship("User", foreign_keys=[user_id], backref="matches")
+    match_id = reference_col("users", nullable=False)
+    match = relationship("User", foreign_keys=[match_id], backref="matched_by")
+    created_at = Column(db.DateTime(timezone=True), nullable=False, default=func.now())
+
+    def __init__(self, user_id, match_id, **kwargs):
+        """Create instance."""
+        db.Model.__init__(self, user_id=user_id, match_id=match_id, **kwargs)
+
+    def __repr__(self):
+        """Represent instance as a unique string."""
+        return f"<UserMatch({self.user_id} -> {self.match_id})>"

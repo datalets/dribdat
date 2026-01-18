@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 """Click commands."""
 import os
+import random
 from glob import glob
 from subprocess import call
 
 import click
-from flask import current_app
+from flask import current_app, url_for
 from flask.cli import with_appcontext
 from werkzeug.exceptions import MethodNotAllowed, NotFound
+
+from dribdat.user.models import User, UserMatch
+from dribdat.database import db
+from dribdat.mailer import send_match_email
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.join(HERE, os.pardir)
@@ -113,3 +118,35 @@ def urls(url, order):
 
     for row in rows:
         click.echo(str_template.format(*row[:column_length]))
+
+
+@click.command()
+@with_appcontext
+def match_users():
+    """Match users that have opted-in."""
+    # Clear existing matches
+    UserMatch.query.delete()
+    db.session.commit()
+
+    users = User.query.filter_by(is_matchable=True).all()
+    if len(users) < 2:
+        click.echo('Not enough users have opted-in to match.')
+        return
+
+    for user in users:
+        # Find 5 random users, excluding the current user
+        possible_matches = [u for u in users if u.id != user.id]
+            team = random.sample(possible_matches, min(5, len(possible_matches)))
+
+            # Store matches
+            for match in team:
+                user_match = UserMatch(user_id=user.id, match_id=match.id)
+                db.session.add(user_match)
+
+            # Send email
+            match_link = url_for('public.user_match', _external=True)
+            send_match_email(user, team, match_link)
+
+    db.session.commit()
+
+    click.echo(f'Matched {len(users)} users and sent emails.')

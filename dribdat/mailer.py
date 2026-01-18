@@ -130,3 +130,55 @@ def notify_admin(about=""):
     msg.send(fail_silently=True)
     return True
 
+
+def send_match_email(user, team, match_link):
+    """Send a team matching email to a user."""
+    from_email = current_app.config["MAIL_DEFAULT_SENDER"]
+    msg = EmailMessage(from_email=from_email)
+    msg.to = [user.email]
+    msg.subject = "You have new teammate recommendations!"
+
+    team_list = "\n".join([f"- {u.username}" for u in team if u.id != user.id])
+
+    msg.body = (
+        f"Hi {user.username},\n\n"
+        f"Here are some teammates we recommend for you:\n"
+        f"{team_list}\n\n"
+        f"You can view their profiles and start a new project here:\n"
+        f"{match_link}\n\n"
+        f"Happy hacking!\n"
+        f"{EMAIL_SIGNATURE}"
+    )
+
+    if "mailman" not in current_app.extensions:
+        current_app.logger.warning("E-mail extension has not been configured")
+        return
+
+    current_app.logger.info(f"Sending match notification to {user.email}")
+    msg.send(fail_silently=True)
+
+
+def send_project_invitation_email(user, project):
+    """Send a project invitation email to a user."""
+    from_email = current_app.config["MAIL_DEFAULT_SENDER"]
+    msg = EmailMessage(from_email=from_email)
+    msg.to = [user.email]
+    msg.subject = f"You have been invited to join the project '{project.name}'!"
+
+    project_link = url_for("project.project_view", project_id=project.id, _external=True)
+
+    msg.body = (
+        f"Hi {user.username},\n\n"
+        f"You have been invited to join the project '{project.name}'.\n\n"
+        f"You can view the project here:\n"
+        f"{project_link}\n\n"
+        f"Happy hacking!\n"
+        f"{EMAIL_SIGNATURE}"
+    )
+
+    if "mailman" not in current_app.extensions:
+        current_app.logger.warning("E-mail extension has not been configured")
+        return
+
+    current_app.logger.info(f"Sending project invitation to {user.email}")
+    msg.send(fail_silently=True)

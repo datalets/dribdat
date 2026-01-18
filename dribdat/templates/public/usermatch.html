@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% blockpage_title %}
+Team Matching
+{% endblock %}
+{% block content %}
+<div class="container" id="main-container">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2">
+      <h1>Team Matching</h1>
+      <p class="lead">Complete your profile to find the best teammates for the upcoming hackathon.</p>
+
+      <div class="card">
+        <div class="card-body">
+          <h2>Profile completeness: {{ score_tip }}%</h2>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: {{ score_tip }}%;" aria-valuenow="{{ score_tip }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p>Links to edit your profile:</p>
+          <ul>
+            <li><a href="{{ url_for('user.profile') }}">Basic info</a></li>
+            <li><a href="{{ url_for('user.story') }}">My story</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h2>Matching status</h2>
+          <form method="POST" action="{{ url_for('public.user_match') }}" class="form" role="form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              {{ form.is_matchable.label }}
+              {{ form.is_matchable(class="form-check-input") }}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h2>Recommended teammates</h2>
+          {% if team_recommend %}
+            <ul class="list-group">
+              {% for u in team_recommend %}
+                <li class="list-group-item">
+                  <a href="{{ url_for('public.user_profile', username=u.username) }}">{{ u.username }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+            <form method="POST" action="{{ url_for('public.create_project_with_team') }}">
+              <input type="hidden" name="team_members" value="{{ team_recommend|map(attribute='id')|join(',') }}">
+              <button type="submit" class="btn btn-primary mt-3">Create Project with this Team</button>
+            </form>
+          {% else %}
+            <p>No recommendations at this time. Check back later!</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
