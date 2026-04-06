@@ -8,6 +8,7 @@ from wtforms import (
     StringField,
     TextAreaField,
     SelectField,
+    SelectMultipleField,
     HiddenField,
 )
 from wtforms.fields import TimeField, DateField, URLField, DateTimeLocalField
@@ -163,6 +164,9 @@ class ProjectPost(FlaskForm):
 
     id = HiddenField("id")
     has_progress = BooleanField("Level up")
+    roles = SelectMultipleField(
+        "Roles", coerce=int, description="Choose one or more team roles for yourself."
+    )
     note = TextAreaField(
         "How are the vibes in your team right now?",
         [length(max=1024)],

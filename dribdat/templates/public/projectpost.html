@@ -111,7 +111,72 @@
 
   <div class="form-project-post">
     {% if stage %}
-      {{ render_form(url_for('project.project_post', project_id=project.id), form, formid='projectPost') }}
+      <form id="projectPost" method="POST" action="{{ url_for('project.project_post', project_id=project.id) }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group{% if form.has_progress.errors %} has-error{% endif %}">
+          {{ form.has_progress(class_="form-check-input") }}
+          {{ form.has_progress.label(class_="form-check-label") }}
+          {% if form.has_progress.errors %}
+            <ul class="help-block error">
+            {% for error in form.has_progress.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+        <div id="roleSelection" style="display:none">
+          <div class="form-group{% if form.roles.errors %} has-error{% endif %}">
+            <label class="control-label" for="roles">{{ form.roles.label }}</label>
+            <div class="fld-roles">
+              {{ form.roles(class_="form-control") }}
+              <span class="help-inline">{{ form.roles.description }}</span>
+              {% if form.roles.errors %}
+                <ul class="help-block error">
+                {% for error in form.roles.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group{% if form.note.errors %} has-error{% endif %}">
+          <label class="control-label" for="note">{{ form.note.label }}</label>
+          <div class="fld-note">
+            {{ form.note(class_="form-control", rows="3") }}
+            <span class="help-inline">{{ form.note.description }}</span>
+            {% if form.note.errors %}
+              <ul class="help-block error">
+              {% for error in form.note.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group mt-2">
+          <div class="form-actions">
+            {{ form.submit(class_="btn btn-primary") }}
+            <a id="swapRoleBtn" href="javascript:;" class="btn btn-light ms-2">
+              <i class="fa fa-refresh" aria-hidden="true"></i>
+              Swap role
+            </a>
+          </div>
+        </div>
+      </form>
+      <script>
+        document.getElementById('swapRoleBtn').addEventListener('click', function() {
+          var roleDiv = document.getElementById('roleSelection');
+          if (roleDiv.style.display === 'none') {
+            roleDiv.style.display = 'block';
+          } else {
+            roleDiv.style.display = 'none';
+          }
+        });
+      </script>
     {% else %}
       {{ render_form(url_for('project.project_comment', project_id=project.id), form, formid='projectPost') }}
     {% endif %}
@@ -135,6 +200,11 @@
             <a class="userlink" 
                href="{{ url_for('public.user_profile', username=s.author )}}">
               {{ s.author }}</a>
+            {% if s.user_roles %}
+              {% for r in s.user_roles %}
+                <span class="badge bg-secondary" title="{{r}}">{{r[0]|upper}}</span>
+              {% endfor %}
+            {% endif %}
           {% endif %}
         </div>
       </div>

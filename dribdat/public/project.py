@@ -205,6 +205,10 @@ def project_post(project_id):
     stage, all_valid = validateProjectData(project)
     form = ProjectPost(obj=project, next=request.args.get("next"))
 
+    # Populate roles
+    from dribdat.user.models import Role
+    form.roles.choices = [(r.id, r.name) for r in Role.query.order_by("name")]
+
     # Apply random questions
     form.note.label.text = drib_question()
 
@@ -213,6 +217,9 @@ def project_post(project_id):
     # thelastact = project.activities[-1].timestamp
     # if form.is_submitted() and timelimit(thelastact):
     #    flash("Please wait a minute before posting", 'warning')
+
+    if not form.is_submitted():
+        form.roles.data = [r.id for r in current_user.roles]
 
     if form.is_submitted() and not form.note.data:
         # Empty submission
@@ -224,9 +231,17 @@ def project_post(project_id):
             if stageProjectToNext(project):
                 flash("Level up! You are at stage '%s'" % project.phase, "info")
 
+        # Update user roles
+        new_roles = Role.query.filter(Role.id.in_(form.roles.data)).all()
+        if set(new_roles) != set(current_user.roles):
+            current_user.roles = new_roles
+            current_user.save()
+            project_action(project_id, "update", action="post", text="🔄 Role swap")
+
         # Update project data
         del form.id
         del form.has_progress
+        del form.roles
         # Process form
         form.populate_obj(project)
         project.update_now()

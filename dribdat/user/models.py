@@ -1096,6 +1096,7 @@ class Project(PkModel):
                 "title": title,
                 "text": text,
                 "author": author,
+                "user_roles": a.data.get("user_roles"),
                 "name": a.name,
                 "date": a.timestamp,
                 "timesince": a.data["timesince"],
@@ -1455,7 +1456,10 @@ class Activity(PkModel):
     @property
     def data(self):
         """Get JSON representation."""
-        localtime = self.timestamp.replace(tzinfo=current_app.tz)  # pyright: ignore
+        try:
+            localtime = self.timestamp.replace(tzinfo=current_app.tz)  # pyright: ignore
+        except Exception:
+            localtime = self.timestamp
         a = {
             "id": self.id,
             "time": int(mktime(self.timestamp.timetuple())),
@@ -1469,6 +1473,7 @@ class Activity(PkModel):
         if self.user:
             a["user_id"] = self.user.id
             a["user_name"] = self.user.username
+            a["user_roles"] = [r.name for r in self.user.roles]
         if self.project:
             a["project_id"] = self.project.id
             a["project_name"] = self.project.name
