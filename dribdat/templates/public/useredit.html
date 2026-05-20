@@ -33,6 +33,18 @@
 
   {{ render_form(url_for('auth.user_profile'), form, formid='userEdit') }}
 
+  <div class="row mt-4">
+    <div class="col text-center">
+      <a href="{{ url_for('mcp.mcp_auth') }}" class="btn btn-dark btn-lg">
+        <i class="fa fa-terminal"></i>
+        Connect to MCP
+      </a>
+      <p class="mt-2 text-muted">
+        Connect your AI agent or MCP client to Dribdat.
+      </p>
+    </div>
+  </div>
+
   <hr>
 
   {% if user.sso_id %}
