@@ -57,6 +57,7 @@ linkify-it-py = "^2"
 huggingface-hub = "^0"
 pyomo = "^6"
 highspy = "^1"
+mcp = "^1.27.0"
 
 [tool.poetry.group.dev.dependencies]
 factory-boy = "*"

@@ -27,6 +27,7 @@ Read more about the project [vision](https://dribdat.cc/purpose) and [history](h
 - **🛠️ Rich Tool Integrations:** Connect with popular platforms like Slack, Mattermost, Discord, and others.
 - **🎨 Customizable & Themeable:** Tailor the platform to your event's brand with a customizable frontend and admin-configurable settings.
 - **📊 Progress Tracking:** Keep a pulse on all projects with real-time progress logs and updates.
+- **⚡ Vibecoding & MCP Integration:** Connect AI assistants (Cursor, Claude Desktop, autonomous agents) via Model Context Protocol (MCP) to automatically post chatbot interaction logs and milestone updates. See our [Vibecoding Guide](docs/VIBECODING.md).
 - **🚀 Alternative Frontends:** Use the standard Bootstrap UI, or try [Backboard](https://github.com/dribdat/backboard) (Vue.js) for a more modern feel.
 
 For details, please see the [User Handbook](https://docs.dribdat.cc/usage). If you need help in setting up, please get in touch via 🗣️ [Discussions](https://github.com/orgs/dribdat/discussions).
